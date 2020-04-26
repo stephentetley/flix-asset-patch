@@ -38,6 +38,17 @@ namespace AssetPatch/Template/EquiTemplate {
     /// EquiTemplate is a Writer monad
     pub opaque type EquiTemplate[t] = (t, Attrs)
 
+    pub def runEquiTemplate(ma: EquiTemplate[a]): (a, List[ClassEqui], List[ValuaEqui]) = 
+        let EquiTemplate((a, w)) = ma;
+        let Attrs(f) = w;
+        let (xs, ys) = f(Nil, Nil);
+        (a, xs, ys)
+
+    pub def execEquiTemplate(ma: EquiTemplate[a]): (List[ClassEqui], List[ValuaEqui]) = 
+        let EquiTemplate((_, w)) = ma;
+        let Attrs(f) = w;
+        f(Nil, Nil)
+
     pub def return(x: t): EquiTemplate[t] = 
         EquiTemplate((x, empty()))
 
@@ -58,16 +69,15 @@ namespace AssetPatch/Template/EquiTemplate {
     pub def tellValuaEqui(x: ValuaEqui): EquiTemplate[Unit] = 
         EquiTemplate(((), valua1(x)))
 
-    pub def runEquiTemplate(ma: EquiTemplate[a]): (a, List[ClassEqui], List[ValuaEqui]) = 
-        let EquiTemplate((a, w)) = ma;
-        let Attrs(f) = w;
-        let (xs, ys) = f(Nil, Nil);
-        (a, xs, ys)
-
-    pub def execEquiTemplate(ma: EquiTemplate[a]): (List[ClassEqui], List[ValuaEqui]) = 
-        let EquiTemplate((_, w)) = ma;
-        let Attrs(f) = w;
-        f(Nil, Nil)
+    pub def mapM(f: a -> EquiTemplate[b], xs: List[a]): EquiTemplate[List[b]] = 
+        mapMHelper(f, xs, empty(), ks -> ks)
         
-
+    def mapMHelper(f: a -> EquiTemplate[b], xs: List[a], w: Attrs, k: List[b] -> List[b]): EquiTemplate[List[b]] = 
+        match xs { 
+            case Nil => EquiTemplate(k(Nil), w)
+            case x :: rs => { 
+                let EquiTemplate((a,w1)) = f(x);
+                mapMHelper(f, rs, w `append` w1, ks -> a :: ks)
+            }
+        }
 }
