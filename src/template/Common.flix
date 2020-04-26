@@ -50,25 +50,12 @@ namespace AssetPatch/Template/Common {
 
     pub opaque type EquiId = String
     
-    
-    pub enum ValuaValue {
-        case NullValue,
-        case IntValue(Int64),
-        case DecimalValue(Float64),
-        case TextValue(String),
-        case DateValue(LocalDate)
-    }
 
-    pub def tryShowValuaValue(x: ValuaValue): Result[String, String] = 
+    pub def tryShowDate(x: LocalDate): Result[String, String] = 
         use Result.flatMap;
         let* patt = Time/Format/DateFormatter.fromPattern("dd.MM.yyyy");
-        Ok(match x {
-            case NullValue              => ""
-            case IntValue(i)            => Int64.toString(i)
-            case DecimalValue(d)        => toDecimalString(5, d)
-            case TextValue(s)           => s
-            case DateValue(d)           => Time/LocalDate.format(d, patt)
-        })
+        Ok(Time/LocalDate.format(x, patt))
+    
 
     pub def makeFileHeader[r](x: { user: String, variant: String, entityType: EntityType | r }): FileHeader & Impure =     
         { fileType = Download

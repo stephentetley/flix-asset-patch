@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+use Time.LocalDate;
+
 use AssetPatch/ChangeFile.{ChangeFile, Headers, DataRow};
 use AssetPatch/ChangeFile.EntityType.{ValuaEqui};
 use AssetPatch/ChangeFile.Headers.{Headers};
@@ -21,7 +24,7 @@ use AssetPatch/ChangeFile.{emptySelection};
 
 use AssetPatch/Template/Common.{EquiId};
 use AssetPatch/Template/Common.EquiId.{EquiId};
-use AssetPatch/Template/Common.{makeFileHeader};
+use AssetPatch/Template/Common.{makeFileHeader, toDecimalString, tryShowDate};
 
 namespace AssetPatch/Template/ValuaEqui {
 
@@ -29,8 +32,52 @@ namespace AssetPatch/Template/ValuaEqui {
                             , code: Int32, valueDescription: String, intCounterValue: Int32
                             , valueFrom: String, valueTo: String
                             }
+                          
 
-    /// TODO - smart constructors for text or number ValuaEquis
+    /// smart constructors for text or number ValuaEquis
+
+    pub def stringValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: String): ValuaEqui = 
+        { equi = equi
+        , classType = classType
+        , charId = charId
+        , charValue = value
+        , code = 1
+        , valueDescription = value
+        , intCounterValue = counter
+        , valueFrom = ""
+        , valueTo = ""
+        }
+        
+    pub def int64ValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: Int64): ValuaEqui = 
+        { equi = equi
+        , classType = classType
+        , charId = charId
+        , charValue = ""
+        , code = 1
+        , valueDescription = ""
+        , intCounterValue = counter
+        , valueFrom = Int64.toString(value)
+        , valueTo = "0"
+        }
+    
+    pub def float64ValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: Float64): ValuaEqui = 
+        { equi = equi
+        , classType = classType
+        , charId = charId
+        , charValue = ""
+        , code = 1
+        , valueDescription = ""
+        , intCounterValue = counter
+        , valueFrom = toDecimalString(5, value)
+        , valueTo = "0"
+        }
+    
+    pub def tryDateValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: LocalDate): Result[ValuaEqui, String] = 
+        use Result.flatMap;
+        let* dateValue = tryShowDate(value);
+        Ok(stringValuaEqui(equi, classType, charId, counter, dateValue))
+
+
 
     def valuaEquiHeaders(): Headers =
         Headers("EQUI" :: "CLASSTYPE" :: "CHARID" :: "ATWRT" :: "ATCOD"	:: "TEXTBEZ" :: "VALCNT" :: "ATFLV" :: "ATFLB" :: Nil)
