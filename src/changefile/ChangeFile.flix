@@ -39,6 +39,18 @@ namespace AssetPatch/ChangeFile {
         case Eqmltxt
     }
 
+
+    pub def showEntityType(x: EntityType): String = match x {
+        case FuncLoc    => "FUNCLOC"
+        case ClassFloc  => "CLASSFLOC"
+        case ValuaFloc  => "VALUAFLOC"
+        case Iflotx     => "IFLOTX"
+        case Equi       => "EQUI"
+        case ClassEqui  => "CLASSEQUI"
+        case ValuaEqui  => "VALUAEQUI"
+        case Eqmltxt    => "EQMLTEXT"
+    }
+
     /// Uninterpreted
     pub opaque type Selection = List[String]
 
@@ -48,7 +60,6 @@ namespace AssetPatch/ChangeFile {
 
     pub type alias FileHeader = { fileType: FileType, dataModel : DataModel, entityType: EntityType, 
                                     variant: String, user: String, dateTime: LocalDateTime } 
-
 
     pub type alias ChangeFile = { fileHeader: FileHeader, selection: Selection, headers: Headers, dataRows: List[DataRow] }
 
