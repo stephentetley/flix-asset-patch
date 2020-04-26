@@ -45,16 +45,7 @@ namespace AssetPatch/ChangeFile/Report {
     }
 
 
-    def pEntityType(x: EntityType) : Html = text <| match x {
-        case FuncLoc    => "FUNCLOC"
-        case ClassFloc  => "CLASSFLOC"
-        case ValuaFloc  => "VALUAFLOC"
-        case Iflotx     => "IFLOTX"
-        case Equi       => "EQUI"
-        case ClassEqui  => "CLASSEQUI"
-        case ValuaEqui  => "VALUAEQUI"
-        case Eqmltxt    => "EQMLTXT"
-    }
+    def pEntityType(x: EntityType) : Html = text(showEntityType(x))
     
         
     

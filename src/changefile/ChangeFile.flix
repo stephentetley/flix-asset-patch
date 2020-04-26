@@ -54,6 +54,8 @@ namespace AssetPatch/ChangeFile {
     /// Uninterpreted
     pub opaque type Selection = List[String]
 
+    pub def emptySelection(): Selection = Selection(Nil)
+
     pub opaque type Headers = List[String]
     
     pub opaque type DataRow = List[String]

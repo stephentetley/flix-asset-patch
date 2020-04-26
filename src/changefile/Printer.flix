@@ -16,7 +16,7 @@
 
 use Time.LocalDateTime;
 use Text/SimpleFormat.{Doc};
-use Text/SimpleFormat.{besideSpace, beside, below, hcat, vcat, text, char, colon, punctuate, tab, line};
+use Text/SimpleFormat.{toString, besideSpace, beside, below, hcat, vcat, text, char, colon, punctuate, tab, line};
 
 use AssetPatch/ChangeFile.{FileType, DataModel, EntityType, Headers, Selection, DataRow, FileHeader, ChangeFile};
 use AssetPatch/ChangeFile.FileType.{Download, Upload};
@@ -41,16 +41,16 @@ namespace AssetPatch/ChangeFile/Printer {
     def defines(name: String, value: String): Doc = 
         char('*') <<>> text(name) <> colon() <<>> text(value)
         
-    pub def ppFileType(x: FileType): Doc = match x {
+    def ppFileType(x: FileType): Doc = match x {
         case Download => comment("Download")
         case Upload => comment("Upload")
     }
 
-    pub def ppDataModel(x: DataModel): Doc =  match x {
+    def ppDataModel(x: DataModel): Doc =  match x {
         case U1 => defines("Data Model", "U1")
     }
 
-    pub def ppEntityType (x : EntityType): Doc =
+    def ppEntityType (x : EntityType): Doc =
         let name = match x {
             case FuncLoc    => "FUNCLOC"
             case ClassFloc  => "CLASSFLOC"
@@ -63,11 +63,11 @@ namespace AssetPatch/ChangeFile/Printer {
         };
         defines("Entity Type", name)
     
-    pub def ppVariant (name: String): Doc = defines("Variant", name)
+    def ppVariant (name: String): Doc = defines("Variant", name)
 
-    pub def ppUser (name : String): Doc = defines("User", name)
+    def ppUser (name : String): Doc = defines("User", name)
 
-    pub def ppDateTime (dt : LocalDateTime) : Doc = 
+    def ppDateTime (dt : LocalDateTime) : Doc = 
         use Result.flatMap;
         let step = () -> {
             let* dfmt = Time/Format/DateTimeFormatter.fromPattern("yyyyMMdd");
@@ -79,21 +79,21 @@ namespace AssetPatch/ChangeFile/Printer {
         Result.getWithDefault(step(), comment("Date: ____ / Time: ____"))   
 
 
-    pub def ppSelection (x: Selection): Doc = 
+    def ppSelection (x: Selection): Doc = 
         let Selection(xs) = x;
         let rows = List.map(comment, xs);
         defines("Selection", "") <!> vcat(rows)
 
-    pub def ppHeaders(x: Headers): Doc = 
+    def ppHeaders(x: Headers): Doc = 
         let Headers(xs) = x;
         let names = punctuate(tab(), List.map(x -> text(x), xs));
         char('*') <> hcat(names)
 
-    pub def ppDataRow(x: DataRow): Doc = 
+    def ppDataRow(x: DataRow): Doc = 
         let DataRow(xs) = x;
         hcat(List.map(x -> text(x) <> tab(), xs))
 
-    pub def ppFileHeader (x: FileHeader): Doc = 
+    def ppFileHeader (x: FileHeader): Doc = 
         vcat(
                 ppFileType(x.fileType)
             :: ppDataModel(x.dataModel)
@@ -104,11 +104,15 @@ namespace AssetPatch/ChangeFile/Printer {
             :: Nil
         )
     
-    pub def ppChangeFile (x: ChangeFile): Doc = 
+    def ppChangeFile (x: ChangeFile): Doc = 
         vcat(
                 ppFileHeader(x.fileHeader)
             :: ppSelection(x.selection)
             :: ppHeaders(x.headers)
             :: List.map(ppDataRow, x.dataRows)
         ) <> line()
+
+    
+    pub def printChangeFile(x: ChangeFile): String = 
+        ppChangeFile(x).toString()
 }
