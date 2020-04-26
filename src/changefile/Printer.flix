@@ -81,8 +81,11 @@ namespace AssetPatch/ChangeFile/Printer {
 
     def ppSelection (x: Selection): Doc = 
         let Selection(xs) = x;
-        let rows = List.map(comment, xs);
-        defines("Selection", "") <!> vcat(rows)
+        match List.map(comment, xs) {
+            case Nil  => defines("Selection", "")
+            case rows => defines("Selection", "") <!> vcat(rows)
+        }
+        
 
     def ppHeaders(x: Headers): Doc = 
         let Headers(xs) = x;
