@@ -50,6 +50,7 @@ namespace AssetPatch/Template/Common {
 
     pub opaque type EquiId = String
     
+    pub opaque type FlocId = String
 
     pub def tryShowDate(x: LocalDate): Result[String, String] = 
         use Result.flatMap;
