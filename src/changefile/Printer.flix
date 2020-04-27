@@ -118,4 +118,10 @@ namespace AssetPatch/ChangeFile/Printer {
     
     pub def printChangeFile(x: ChangeFile): String = 
         ppChangeFile(x).toString()
+
+    pub def writeChangeFile(x: ChangeFile, path: String): Result[Unit, String] & Impure = 
+        let path1 = System/FilePath.new(path);
+        let str = ppChangeFile(x).toString();
+        System/File.writeFile(path1, System/Charset.utf_8(), str)
+
 }

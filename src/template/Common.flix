@@ -18,7 +18,7 @@ use Time.LocalDate;
 
 use AssetPatch/ChangeFile.{ChangeFile, FileType, DataModel, EntityType, Headers, Selection, DataRow, FileHeader};
 use AssetPatch/ChangeFile.{showEntityType};
-use AssetPatch/ChangeFile.FileType.{Download};
+use AssetPatch/ChangeFile.FileType.{Upload};
 use AssetPatch/ChangeFile.DataModel.{U1};
 use AssetPatch/ChangeFile.EntityType.{FuncLoc, ClassFloc, ValuaFloc, Iflotx, Equi, ClassEqui, ValuaEqui, Eqmltxt};
 use AssetPatch/ChangeFile.Headers.{Headers};
@@ -59,7 +59,7 @@ namespace AssetPatch/Template/Common {
     
 
     pub def makeFileHeader[r](x: { user: String, variant: String, entityType: EntityType | r }): FileHeader & Impure =     
-        { fileType = Download
+        { fileType = Upload
         , dataModel = U1
         , entityType = x.entityType
         , variant = x.variant

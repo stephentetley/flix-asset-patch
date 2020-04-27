@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-
+use AssetPatch/ChangeFile/Printer.{writeChangeFile};
 use AssetPatch/Template/ClassEqui.ClassEqui;
 use AssetPatch/Template/ValuaEqui.ValuaEqui;
 
@@ -49,6 +49,13 @@ namespace AssetPatch/Template/EquiTemplate {
         let Attrs(f) = w;
         f(Nil, Nil)
 
+    pub def generatePatches(ma: EquiTemplate[a], username: String, classpath: String, valuapath: String): Result[Unit, String] & Impure = 
+        use Result.flatMap; 
+        let ((xs,ys)) = execEquiTemplate(ma);
+        let* _ = AssetPatch/Template/ClassEqui.makeChangeFile(username, "Asset Patch Create ClassEquis", xs).writeChangeFile(classpath);
+        let* _ = AssetPatch/Template/ValuaEqui.makeChangeFile(username, "Asset Patch Create ValuaEquis", ys).writeChangeFile(valuapath);
+        Ok(())
+
     pub def return(x: t): EquiTemplate[t] = 
         EquiTemplate((x, empty()))
 
@@ -80,4 +87,16 @@ namespace AssetPatch/Template/EquiTemplate {
                 mapMHelper(f, rs, w `append` w1, ks -> a :: ks)
             }
         }
+
+    pub def sequence_(xs: List[EquiTemplate[a]]): EquiTemplate[Unit] = sequenceHelper_(xs, empty())
+    
+    def sequenceHelper_(xs: List[EquiTemplate[a]], w: Attrs): EquiTemplate[Unit] = 
+        match xs { 
+            case Nil => EquiTemplate((), w)
+            case mx :: rs => { 
+                let EquiTemplate((_,w1)) = mx;
+                sequenceHelper_(rs, w `append` w1)
+            }
+        }
+        
 }

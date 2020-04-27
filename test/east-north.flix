@@ -6,8 +6,8 @@ use AssetPatch/Template/Common.EquiId.{EquiId};
 use AssetPatch/Template/ClassEqui.ClassEqui;
 use AssetPatch/Template/ValuaEqui.ValuaEqui;
 use AssetPatch/Template/EquiTemplate.{EquiTemplate};
-use AssetPatch/Template/EquiTemplate.{execEquiTemplate, return, tellClassEqui, tellValuaEqui, mapM};
-use AssetPatch/Template/EquiCatalogue.{east_north};
+use AssetPatch/Template/EquiTemplate.{generatePatches, execEquiTemplate, return, tellClassEqui, tellValuaEqui, mapM, sequence_};
+use AssetPatch/Template/EquiCatalogue.{east_north, aib_reference, crhtds};
 
 /// Are Easting and Northing Strings or Ints in the DB?
 /// Possibly Strings to preserve their 6 digits...
@@ -27,5 +27,24 @@ def test01(): Unit & Impure =
     let s2 = AssetPatch/Template/ValuaEqui.makeChangeFile("TETLEYS", "Asset Patch Create ValuaEquis", ys).printChangeFile();
     Console.printLine(s1);
     Console.printLine(s2)
+
+
+@test
+def test02(): Result[Unit, String] & Impure = 
+    let src = 
+        { equiId = EquiId("$11284")
+        , easting = 421152
+        , northing = 426938
+        , sai_ref = "SAI00067109"
+        , pli_ref = "PLI00008901"
+        , load = 1000
+        , loadUnits = "KG"
+        , srNumber = "L67900"
+        , testCert = "UNKNOWN"
+    };
+    let path1 = "G:\work\Projects\assets\flix_asset_patch\classequi-out.txt";
+    let path2 = "G:\work\Projects\assets\flix_asset_patch\valuaequi-out.txt";
+    let ma = sequence_(east_north(src) :: aib_reference(src) :: crhtds(src) :: Nil); 
+    generatePatches(ma, "TETLEYS", path1, path2)   
 
 
