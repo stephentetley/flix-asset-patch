@@ -26,15 +26,14 @@ use AssetPatch/Template/Common.{makeFileHeader};
 
 namespace AssetPatch/Template/ClassFloc {
 
-    type alias ClassFloc = { floc: FlocId, className: String, classType: Int32, status: Int32 }
+    type alias ClassFloc = { floc: FlocId, className: String, classType: String, status: Int32 }
 
     def classFlocHeaders(): Headers =
         Headers("FUNCLOC" :: "CLASS" :: "CLASSTYPE" :: "CLSTATUS1" :: Nil)
 
     def dataRow(x: ClassFloc): DataRow = 
         let FlocId(flocId) = x.floc;
-        let classType = String.padLeft(3, '0', Int32.toString(x.classType));
-        DataRow(flocId :: x.className :: classType :: Int32.toString(x.status) :: Nil)
+        DataRow(flocId :: x.className :: x.classType :: Int32.toString(x.status) :: Nil)
 
     pub def makeChangeFile(user: String, variant: String, xs: List[ClassFloc]): ChangeFile & Impure = 
         let fh = makeFileHeader({ user = user, variant = variant, entityType = ClassFloc});

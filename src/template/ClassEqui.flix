@@ -26,15 +26,14 @@ use AssetPatch/Template/Common.{makeFileHeader};
 
 namespace AssetPatch/Template/ClassEqui {
 
-    type alias ClassEqui = { equi: EquiId, className: String, classType: Int32, status: Int32 }
+    type alias ClassEqui = { equi: EquiId, className: String, classType: String, status: Int32 }
 
     def classEquiHeaders(): Headers =
         Headers("EQUI" :: "CLASS" :: "CLASSTYPE" :: "CLSTATUS1" :: Nil)
 
     def dataRow(x: ClassEqui): DataRow = 
         let EquiId(equiId) = x.equi;
-        let classType = String.padLeft(3, '0', Int32.toString(x.classType));
-        DataRow(equiId :: x.className :: classType :: Int32.toString(x.status) :: Nil)
+        DataRow(equiId :: x.className :: x.classType :: Int32.toString(x.status) :: Nil)
 
     pub def makeChangeFile(user: String, variant: String, xs: List[ClassEqui]): ChangeFile & Impure = 
         let fh = makeFileHeader({ user = user, variant = variant, entityType = ClassEqui});

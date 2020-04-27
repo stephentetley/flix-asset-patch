@@ -28,7 +28,7 @@ use AssetPatch/Template/Common.{makeFileHeader, toDecimalString, tryShowDate};
 
 namespace AssetPatch/Template/ValuaEqui {
 
-    type alias ValuaEqui = { equi: EquiId, classType: Int32, charId: String,  charValue: String
+    type alias ValuaEqui = { equi: EquiId, classType: String, charId: String,  charValue: String
                             , code: Int32, valueDescription: String, intCounterValue: Int32
                             , valueFrom: String, valueTo: String
                             }
@@ -36,7 +36,7 @@ namespace AssetPatch/Template/ValuaEqui {
 
     /// smart constructors for text or number ValuaEquis
 
-    pub def stringValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: String): ValuaEqui = 
+    pub def stringValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: String): ValuaEqui = 
         { equi = equi
         , classType = classType
         , charId = charId
@@ -48,7 +48,7 @@ namespace AssetPatch/Template/ValuaEqui {
         , valueTo = ""
         }
         
-    pub def int64ValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: Int64): ValuaEqui = 
+    pub def int64ValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: Int64): ValuaEqui = 
         { equi = equi
         , classType = classType
         , charId = charId
@@ -60,7 +60,7 @@ namespace AssetPatch/Template/ValuaEqui {
         , valueTo = "0"
         }
     
-    pub def float64ValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: Float64): ValuaEqui = 
+    pub def float64ValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: Float64): ValuaEqui = 
         { equi = equi
         , classType = classType
         , charId = charId
@@ -72,7 +72,7 @@ namespace AssetPatch/Template/ValuaEqui {
         , valueTo = "0"
         }
     
-    pub def tryDateValuaEqui(equi: EquiId, classType: Int32, charId: String, counter: Int32, value: LocalDate): Result[ValuaEqui, String] = 
+    pub def tryDateValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: LocalDate): Result[ValuaEqui, String] = 
         use Result.flatMap;
         let* dateValue = tryShowDate(value);
         Ok(stringValuaEqui(equi, classType, charId, counter, dateValue))
@@ -84,9 +84,8 @@ namespace AssetPatch/Template/ValuaEqui {
 
     def dataRow(x: ValuaEqui): DataRow = 
         let EquiId(equiId) = x.equi;
-        let classType = String.padLeft(3, '0', Int32.toString(x.classType));
         let intCounterValue = String.padLeft(3, '0', Int32.toString(x.intCounterValue));
-        DataRow(equiId :: classType :: x.charId :: x.charValue :: Int32.toString(x.code) 
+        DataRow(equiId :: x.classType :: x.charId :: x.charValue :: Int32.toString(x.code) 
                 :: x.valueDescription :: intCounterValue :: x.valueFrom :: x.valueTo :: Nil)
 
     pub def makeChangeFile(user: String, variant: String, xs: List[ValuaEqui]): ChangeFile & Impure = 

@@ -28,7 +28,7 @@ use AssetPatch/Template/Common.{makeFileHeader, toDecimalString, tryShowDate};
 
 namespace AssetPatch/Template/ValuaFloc {
 
-    type alias ValuaFloc = { floc: FlocId, classType: Int32, charId: String,  charValue: String
+    type alias ValuaFloc = { floc: FlocId, classType: String, charId: String,  charValue: String
                             , code: Int32, valueDescription: String, intCounterValue: Int32
                             , valueFrom: String, valueTo: String
                             }
@@ -36,7 +36,7 @@ namespace AssetPatch/Template/ValuaFloc {
 
     /// smart constructors for text or number ValuaFlocs
 
-    pub def stringValuaFloc(floc: FlocId, classType: Int32, charId: String, counter: Int32, value: String): ValuaFloc = 
+    pub def stringValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: String): ValuaFloc = 
         { floc = floc
         , classType = classType
         , charId = charId
@@ -48,7 +48,7 @@ namespace AssetPatch/Template/ValuaFloc {
         , valueTo = ""
         }
         
-    pub def int64ValuaFloc(floc: FlocId, classType: Int32, charId: String, counter: Int32, value: Int64): ValuaFloc = 
+    pub def int64ValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: Int64): ValuaFloc = 
         { floc = floc
         , classType = classType
         , charId = charId
@@ -60,7 +60,7 @@ namespace AssetPatch/Template/ValuaFloc {
         , valueTo = "0"
         }
     
-    pub def float64ValuaFloc(floc: FlocId, classType: Int32, charId: String, counter: Int32, value: Float64): ValuaFloc = 
+    pub def float64ValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: Float64): ValuaFloc = 
         { floc = floc
         , classType = classType
         , charId = charId
@@ -72,7 +72,7 @@ namespace AssetPatch/Template/ValuaFloc {
         , valueTo = "0"
         }
     
-    pub def tryDateValuaFloc(floc: FlocId, classType: Int32, charId: String, counter: Int32, value: LocalDate): Result[ValuaFloc, String] = 
+    pub def tryDateValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: LocalDate): Result[ValuaFloc, String] = 
         use Result.flatMap;
         let* dateValue = tryShowDate(value);
         Ok(stringValuaFloc(floc, classType, charId, counter, dateValue))
@@ -84,9 +84,8 @@ namespace AssetPatch/Template/ValuaFloc {
                 
     def dataRow(x: ValuaFloc): DataRow = 
         let FlocId(flocId) = x.floc;
-        let classType = String.padLeft(3, '0', Int32.toString(x.classType));
         let intCounterValue = String.padLeft(3, '0', Int32.toString(x.intCounterValue));
-        DataRow(flocId :: classType :: x.charId :: x.charValue :: Int32.toString(x.code) 
+        DataRow(flocId :: x.classType :: x.charId :: x.charValue :: Int32.toString(x.code) 
                 :: x.valueDescription :: intCounterValue :: x.valueFrom :: x.valueTo :: Nil)
 
     pub def makeChangeFile(user: String, variant: String, xs: List[ValuaFloc]): ChangeFile & Impure = 

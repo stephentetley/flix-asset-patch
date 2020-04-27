@@ -15,7 +15,7 @@ use AssetPatch/Template/EquiTemplate.{execEquiTemplate, return, tellClassEqui, t
 
 def east_north[r](x : { equiId: EquiId, easting:Int32, northing: Int32 | r }): EquiTemplate[Unit] = 
     use AssetPatch/Template/EquiTemplate.{flatMap};
-    let* _ = tellClassEqui( { equi = x.equiId, className = "EAST_NORTH", classType = 2, status = 1 });
+    let* _ = tellClassEqui( { equi = x.equiId, className = "EAST_NORTH", classType = "002", status = 1 });
     let* _ = easting(x);
     let* _ = northing(x);
     return()
@@ -24,12 +24,12 @@ def east_north[r](x : { equiId: EquiId, easting:Int32, northing: Int32 | r }): E
 def easting[r](x : { equiId: EquiId, easting: Int32 | r }): EquiTemplate[Unit] = 
     use AssetPatch/Template/ValuaEqui.{stringValuaEqui};
     let value = String.padLeft(6, '0', Int32.toString(x.easting));
-    tellValuaEqui(stringValuaEqui(x.equiId, 2, "EASTING", 1, value))
+    tellValuaEqui(stringValuaEqui(x.equiId, "002", "EASTING", 1, value))
 
 def northing[r](x : { equiId: EquiId, northing: Int32 | r }): EquiTemplate[Unit] = 
     use AssetPatch/Template/ValuaEqui.{stringValuaEqui};
     let value = String.padLeft(6, '0', Int32.toString(x.northing));
-    tellValuaEqui(stringValuaEqui(x.equiId, 2, "NORTHING", 1, value))
+    tellValuaEqui(stringValuaEqui(x.equiId, "002", "NORTHING", 1, value))
 
 
 
