@@ -7,29 +7,13 @@ use AssetPatch/Template/ClassEqui.ClassEqui;
 use AssetPatch/Template/ValuaEqui.ValuaEqui;
 use AssetPatch/Template/EquiTemplate.{EquiTemplate};
 use AssetPatch/Template/EquiTemplate.{execEquiTemplate, return, tellClassEqui, tellValuaEqui, mapM};
-
+use AssetPatch/Template/EquiCatalogue.{east_north};
 
 /// Are Easting and Northing Strings or Ints in the DB?
 /// Possibly Strings to preserve their 6 digits...
 
 
-def east_north[r](x : { equiId: EquiId, easting:Int32, northing: Int32 | r }): EquiTemplate[Unit] = 
-    use AssetPatch/Template/EquiTemplate.{flatMap};
-    let* _ = tellClassEqui( { equi = x.equiId, className = "EAST_NORTH", classType = "002", status = 1 });
-    let* _ = easting(x);
-    let* _ = northing(x);
-    return()
 
-
-def easting[r](x : { equiId: EquiId, easting: Int32 | r }): EquiTemplate[Unit] = 
-    use AssetPatch/Template/ValuaEqui.{stringValuaEqui};
-    let value = String.padLeft(6, '0', Int32.toString(x.easting));
-    tellValuaEqui(stringValuaEqui(x.equiId, "002", "EASTING", 1, value))
-
-def northing[r](x : { equiId: EquiId, northing: Int32 | r }): EquiTemplate[Unit] = 
-    use AssetPatch/Template/ValuaEqui.{stringValuaEqui};
-    let value = String.padLeft(6, '0', Int32.toString(x.northing));
-    tellValuaEqui(stringValuaEqui(x.equiId, "002", "NORTHING", 1, value))
 
 
 
