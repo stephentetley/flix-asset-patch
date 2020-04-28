@@ -98,11 +98,16 @@ namespace AssetPatch/Template/EquiCatalogue {
         crhtFamily("CHRTBT", x)
 
     ///
-    /// CRHTCH (??? Hoists?)
+    /// CRHTCH (Crane Hoist)
     ///
     pub def crhtch[r](x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] =
         crhtFamily("CHRTCH", x)
 
+    ///
+    /// CRHTCH (Crane)
+    ///
+    pub def crhtcr[r](x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] =
+        crhtFamily("CHRTCR", x)
     
     ///
     /// CRHTDA (Davit)
@@ -120,13 +125,14 @@ namespace AssetPatch/Template/EquiCatalogue {
     ///
     /// liacFamily
     ///
-    def liacFamily[r](objectClass: String, x: { equiId: EquiId, load: Int32, loadUnits: String, testCert: String | r }): EquiTemplate[Unit] = 
+    def liacFamily[r](objectClass: String, x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] = 
         use AssetPatch/Template/EquiTemplate.{flatMap};
         let* _ = tellClassEqui( { equi = x.equiId, className = objectClass, classType = "002", status = 1 });
         let* _ = uniclass_code(x);
         let* _ = uniclass_desc(x);
         let* _ = chrt_safe_working_load(x);
         let* _ = chrt_safe_working_load_units(x);
+        let* _ = statutory_reference_number(x);
         let* _ = test_cert_no(x);
         return()
 
@@ -138,13 +144,13 @@ namespace AssetPatch/Template/EquiCatalogue {
 
 
     ///
-    /// LIACDS (???)
+    /// LIACDS (D Shackle)
     ///
     pub def liacds[r](x : { equiId: EquiId, load: Int32, loadUnits: String, testCert: String | r }): EquiTemplate[Unit] =
         liacFamily("LIACDSs", x)
 
     ///
-    /// LIACMISC (Fork lift trucks etc.)
+    /// LIACMISC (miscellaneous, e.g. fork lift trucks etc.)
     ///
     pub def liacmisc[r](x : { equiId: EquiId, load: Int32, loadUnits: String, testCert: String | r }): EquiTemplate[Unit] =
         liacFamily("LIACMISC", x)
