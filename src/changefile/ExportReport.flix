@@ -15,7 +15,7 @@
  */
 
 use Text/HtmlDoc.{Html};
-use Text/HtmlDoc.{append, concat, html, head, body, title, link, text, anchor, table, tr, td, th, h1};
+use Text/HtmlDoc.{exportHtml, append, concat, html, head, body, title, link, text, anchor, table, tr, td, th, h1};
 use Text/HtmlDoc.{href_, type_, colspan_, rel_};
 
 use AssetPatch/ChangeFile/Datatypes.{FileType, DataModel, EntityType, Headers, Selection, DataRow, FileHeader, ChangeFile};
@@ -27,7 +27,7 @@ use AssetPatch/ChangeFile/Datatypes.Headers.{Headers};
 use AssetPatch/ChangeFile/Datatypes.Selection.{Selection};
 use AssetPatch/ChangeFile/Datatypes.DataRow.{DataRow};
 
-namespace AssetPatch/ChangeFile/Report {
+namespace AssetPatch/ChangeFile/ExportReport {
 
 
     def <&>(x: Html, y: Html) : Html = append(x, y)
@@ -99,4 +99,7 @@ namespace AssetPatch/ChangeFile/Report {
                 )
         )
 
+    pub def exportReport(x: ChangeFile, path: String): Result[Unit, String] & Impure =       
+        changeFileReport(x) |> exportHtml(120, path)
+        
 }

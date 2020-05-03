@@ -9,6 +9,7 @@ use AssetPatch/ChangeFile/Datatypes.FileType.{Download, Upload};
 use AssetPatch/ChangeFile/Datatypes.Headers.{Headers};
 use AssetPatch/ChangeFile/Datatypes.DataRow.{DataRow};
 use AssetPatch/ChangeFile/Printer.{printChangeFile};
+use AssetPatch/ChangeFile/ExportReport.{exportReport};
 use AssetPatch/ChangeFile/ExportCsv.{exportCsv};
 
 @test
@@ -23,10 +24,14 @@ def test02(): Result[Unit, String] & Impure =
     use Result.flatMap;
     let src = 
         "G:\work\Projects\assets\flix_asset_patch\car36_outstation_valuaequi.txt" |> System/FilePath.new;
-    let dest = 
-        "G:\work\Projects\assets\flix_asset_patch\car36_outstation_valuaequi_output.csv";
-    let* ans = TextScanner.parseFile(AssetPatch/ChangeFile/Parser.pChangeFile(), src, System/Charset.utf_8());
-    let* _ = exportCsv(ans, dest);
+    let csv = 
+        "G:/work/Projects/assets/flix_asset_patch/car36_outstation_valuaequi_output.csv";
+    let html = 
+        "G:/work/Projects/assets/flix_asset_patch/car36_outstation_valuaequi_output.html";
+    
+    let* ans = TextScanner.parseFile(AssetPatch/ChangeFile/Parser.pChangeFile(), src, System/Charset.utf_8());    
+    let* _ = exportReport(ans, html);
+    let* _ = exportCsv(ans, csv);
     Ok()
 
 
