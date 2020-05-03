@@ -16,11 +16,11 @@
 
 use Time.LocalDate;
 
-use AssetPatch/ChangeFile.{ChangeFile, Headers, DataRow};
-use AssetPatch/ChangeFile.EntityType.{ValuaFloc};
-use AssetPatch/ChangeFile.Headers.{Headers};
-use AssetPatch/ChangeFile.DataRow.{DataRow};
-use AssetPatch/ChangeFile.{emptySelection};
+use AssetPatch/ChangeFile/Datatypes.{ChangeFile, Headers, DataRow};
+use AssetPatch/ChangeFile/Datatypes.EntityType.{ValuaFloc};
+use AssetPatch/ChangeFile/Datatypes.Headers.{Headers};
+use AssetPatch/ChangeFile/Datatypes.DataRow.{DataRow};
+use AssetPatch/ChangeFile/Datatypes.{emptySelection};
 
 use AssetPatch/Template/Common.{FlocId};
 use AssetPatch/Template/Common.FlocId.{FlocId};

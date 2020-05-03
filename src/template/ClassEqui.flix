@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-use AssetPatch/ChangeFile.{ChangeFile, Headers, DataRow};
-use AssetPatch/ChangeFile.EntityType.{ClassEqui};
-use AssetPatch/ChangeFile.Headers.{Headers};
-use AssetPatch/ChangeFile.DataRow.{DataRow};
-use AssetPatch/ChangeFile.{emptySelection};
+use AssetPatch/ChangeFile/Datatypes.{ChangeFile, Headers, DataRow};
+use AssetPatch/ChangeFile/Datatypes.EntityType.{ClassEqui};
+use AssetPatch/ChangeFile/Datatypes.Headers.{Headers};
+use AssetPatch/ChangeFile/Datatypes.DataRow.{DataRow};
+use AssetPatch/ChangeFile/Datatypes.{emptySelection};
 
 use AssetPatch/Template/Common.{EquiId};
 use AssetPatch/Template/Common.EquiId.{EquiId};

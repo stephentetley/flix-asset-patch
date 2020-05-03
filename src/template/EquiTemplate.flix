@@ -15,6 +15,7 @@
  */
 
 use AssetPatch/ChangeFile/Printer.{writeChangeFile};
+use AssetPatch/ChangeFile/ExportCsv.{exportCsv};
 use AssetPatch/Template/ClassEqui.ClassEqui;
 use AssetPatch/Template/ValuaEqui.ValuaEqui;
 
@@ -54,6 +55,7 @@ namespace AssetPatch/Template/EquiTemplate {
         let ((xs,ys)) = execEquiTemplate(ma);
         let* _ = AssetPatch/Template/ClassEqui.makeChangeFile(username, "Asset Patch Create ClassEquis", xs).writeChangeFile(classpath);
         let* _ = AssetPatch/Template/ValuaEqui.makeChangeFile(username, "Asset Patch Create ValuaEquis", ys).writeChangeFile(valuapath);
+        // let* _ = AssetPatch/Template/ClassEqui.makeChangeFile(username, "Asset Patch Create ClassEquis", xs).exportCsv(classpath + ".csv");
         Ok(())
 
     pub def return(x: t): EquiTemplate[t] = 

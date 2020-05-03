@@ -118,13 +118,13 @@ namespace AssetPatch/ChangeFile/Parser {
         use TextScanner.flatMap;
         let* h1 = map(s -> String.dropLeft(1, s), next());
         let* str = nextLine();
-        return(Headers(h1 :: String.splitOn(str, "\t")))
+        return(Headers(h1 :: String.splitOn(String.trim(str), Char.toString('\u0009'))))
 
     
     def pDataRow(): Scanner[DataRow] = 
         use TextScanner.flatMap;
         let* str = nextLine();
-        return(DataRow(String.splitOn(str, "\t")))
+        return(DataRow(String.splitOn(String.trimRight(str), Char.toString('\u0009'))))
 
 
     pub def pChangeFile(): Scanner[ChangeFile] = 

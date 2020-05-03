@@ -16,14 +16,14 @@
 
 use Time.LocalDate;
 
-use AssetPatch/ChangeFile.{ChangeFile, FileType, DataModel, EntityType, Headers, Selection, DataRow, FileHeader};
-use AssetPatch/ChangeFile.{showEntityType};
-use AssetPatch/ChangeFile.FileType.{Upload};
-use AssetPatch/ChangeFile.DataModel.{U1};
-use AssetPatch/ChangeFile.EntityType.{FuncLoc, ClassFloc, ValuaFloc, Iflotx, Equi, ClassEqui, ValuaEqui, Eqmltxt};
-use AssetPatch/ChangeFile.Headers.{Headers};
-use AssetPatch/ChangeFile.Selection.{Selection};
-use AssetPatch/ChangeFile.DataRow.{DataRow};
+use AssetPatch/ChangeFile/Datatypes.{ChangeFile, FileType, DataModel, EntityType, Headers, Selection, DataRow, FileHeader};
+use AssetPatch/ChangeFile/Datatypes.{showEntityType};
+use AssetPatch/ChangeFile/Datatypes.FileType.{Upload};
+use AssetPatch/ChangeFile/Datatypes.DataModel.{U1};
+use AssetPatch/ChangeFile/Datatypes.EntityType.{FuncLoc, ClassFloc, ValuaFloc, Iflotx, Equi, ClassEqui, ValuaEqui, Eqmltxt};
+use AssetPatch/ChangeFile/Datatypes.Headers.{Headers};
+use AssetPatch/ChangeFile/Datatypes.Selection.{Selection};
+use AssetPatch/ChangeFile/Datatypes.DataRow.{DataRow};
 
 namespace AssetPatch/Template/Common {
 
