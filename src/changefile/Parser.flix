@@ -16,92 +16,81 @@
 
 use Time.LocalDateTime;
 
-use TextParser.Parser;
-use TextParser.{return, map, nestError, alt, swapError, liftResult};
-use TextParser/Combinators.{optional, seqLeft, seqRight, count, many, many1, manyTill, ignore, tuple2, sepBy, endBy, choice};
-use TextParser/Text.{char, string, space, lower, oneOf, noneOf, newline, byteOrderMark, tab, restOfLine, many1Chars, 
-                        padded, rightPadded, digit, digits, manyChars, manyChars2, endOfLine, upper, spaces};
+use TextScanner.Scanner;
+use TextScanner.{return, map, throwError, seqLeft, seqRight, next, nextLine, hasNextLine, nextInt32, nextMatch, 
+                    anchorString, findStringInLine,  nextLiteral, liftResult, manyWhileSome, manyWhileTrue, scanLine};
 
-use AssetPatch/ChangeFile.{FileType, DataModel, EntityType, Headers, Selection, DataRow, FileHeader, ChangeFile};
-use AssetPatch/ChangeFile.FileType.{Download, Upload};
-use AssetPatch/ChangeFile.DataModel.{U1};
-use AssetPatch/ChangeFile.EntityType.{FuncLoc, ClassFloc, ValuaFloc, Iflotx, Equi, ClassEqui, ValuaEqui, Eqmltxt};
-use AssetPatch/ChangeFile.Headers.{Headers};
-use AssetPatch/ChangeFile.Selection.{Selection};
-use AssetPatch/ChangeFile.DataRow.{DataRow};
+use AssetPatch/ChangeFile/Datatypes.{FileType, DataModel, EntityType, Headers, Selection, DataRow, FileHeader, ChangeFile};
+use AssetPatch/ChangeFile/Datatypes.FileType.{Download, Upload};
+use AssetPatch/ChangeFile/Datatypes.DataModel.{U1};
+use AssetPatch/ChangeFile/Datatypes.EntityType.{FuncLoc, ClassFloc, ValuaFloc, Iflotx, Equi, ClassEqui, ValuaEqui, Eqmltxt};
+use AssetPatch/ChangeFile/Datatypes.Headers.{Headers};
+use AssetPatch/ChangeFile/Datatypes.Selection.{Selection};
+use AssetPatch/ChangeFile/Datatypes.DataRow.{DataRow};
 
 
 namespace AssetPatch/ChangeFile/Parser {
 
+    def asterisk(): Scanner[Unit] =  
+        nextLiteral("*")
     
+    def commentNameValue(name: String, sc: Scanner[a]): Scanner[a] = 
+        use TextScanner.flatMap;
+        let* _ = anchorString(name + ":");
+        sc
 
-    def nameValue(name: String, pValue: Parser[a]): Parser[a] =
-        use TextParser.flatMap; 
-        let* _ = string(name);
-        let* _ = char(':');
-        let* _ = optional(space());
-        pValue
-
-    def token(s: String): Parser[String] = 
-        string(s) `seqLeft` spaces()
-
-    ///
-    /// This consumes end-of-line.
-    /// 
-    def pCommentLine(p: Parser[a]): Parser[a] = 
-        use TextParser.flatMap;
-        let* _ = char('*');
-        let* ans = p;
-        let* _ = endOfLine();
-        return(ans)
-
-    
-    pub def pFileType(): Parser[FileType] = 
-        let download = string("Download")     `seqRight` return(Download);
-        let upload   = string("Upload")       `seqRight` return(Upload);
-        pCommentLine(download `alt` upload)
-
-    pub def pDataModel(): Parser[DataModel] = 
-        let u1 = token("U1") `seqRight` return(U1);
-        pCommentLine(nameValue("Data Model", u1))
+    def pFileType(): Scanner[FileType] = 
+        use TextScanner.flatMap;
+        let* _ = asterisk();
+        let* s = next();
+        match s {
+            case "Download" => return(Download)
+            case "Upload" => return(Upload)
+            case _ => throwError("FileType")
+        }
         
 
-    pub def pEntityType(): Parser[EntityType] =
-        let inner =choice( 
-                (token("FUNCLOC")   `seqRight` return(FuncLoc))
-            :: (token("CLASSFLOC")  `seqRight` return(ClassFloc))
-            :: (token("VALUAFLOC")  `seqRight` return(ValuaFloc))
-            :: (token("IFLOTX")     `seqRight` return(Iflotx))
-            :: (token("EQUI")       `seqRight` return(Equi))
-            :: (token("CLASSEQUI")  `seqRight` return(ClassEqui))
-            :: (token("VALUAEQUI")  `seqRight` return(ValuaEqui))
-            :: (token("EQMLTXT")    `seqRight` return(Eqmltxt))
-            :: Nil
-        );
-        pCommentLine(nameValue("Entity Type", inner))
+    def pDataModel(): Scanner[DataModel] = 
+        let u1 = nextLiteral("U1") `seqRight` return(U1);
+        commentNameValue("Data Model",  u1)
+        
 
-
-
-    pub def pVariant(): Parser[String] = 
-        pCommentLine(nameValue("Variant", restOfLine(false)))
-    
-    pub def pUser(): Parser[String] = 
-        pCommentLine(nameValue("User", restOfLine(false)))
-
-    pub def pDateTime(): Parser[LocalDateTime] = 
-        use TextParser.flatMap;
-        let inner = { 
-            let* d = nameValue("Date", digits());
-            let* _ = padded(char('/'));
-            let* t = nameValue("Time", digits());
-            let* patt = liftResult(Time/Format/DateTimeFormatter.fromPattern("yyyyMMdd HHmmss"));
-            let* ans = liftResult(Time/LocalDateTime.fromStringWithFormat(d + "  " + t, patt));
-            return(ans)
+    def pEntityType(): Scanner[EntityType] =
+        use TextScanner.flatMap;
+        let body = () -> {
+            let* s = next();
+            match s {
+                case "FUNCLOC"      => return(FuncLoc)
+                case "CLASSFLOC"    => return(ClassFloc)
+                case "VALUAFLOC"    => return(ValuaFloc)
+                case "IFLOTX"       => return(Iflotx)
+                case "EQUI"         => return(Equi)
+                case "CLASSEQUI"    => return(ClassEqui)
+                case "VALUAEQUI"    => return(ValuaEqui)
+                case "EQMLTXT"      => return(Eqmltxt)
+                case _              => throwError("EntityType")
+            }
         };
-        pCommentLine(inner)
+        commentNameValue("Entity Type", body())
+
+    def pVariant(): Scanner[String] = 
+        commentNameValue("Variant", nextLine())
+    
+    def pUser(): Scanner[String] = 
+        commentNameValue("User", nextLine())
+
+    def pDateTime(): Scanner[LocalDateTime] = 
+        use TextScanner.flatMap;
+        let* d = anchorString("Date:") `seqRight` nextMatch("\d+");
+        let* _ = nextLiteral("/");
+        let* t = nextLiteral("Time:")  `seqRight` nextMatch("\d+");
+        let* patt = liftResult(Time/Format/DateTimeFormatter.fromPattern("yyyyMMdd HHmmss"));
+        let* ans = liftResult(Time/LocalDateTime.fromStringWithFormat(d + " " + t, patt));
+        return(ans)
         
-    pub def pHeader(): Parser[FileHeader] = 
-        use TextParser.flatMap;
+
+    def pHeader(): Scanner[FileHeader] = 
+        use TextScanner.flatMap;
         let* ft = pFileType();
         let* dm = pDataModel();
         let* et = pEntityType();
@@ -111,51 +100,39 @@ namespace AssetPatch/ChangeFile/Parser {
         return({ fileType = ft, dataModel = dm, entityType = et, 
                     variant = v, user = u, dateTime = dt })
 
-    pub def pSelectionHeader(): Parser[Unit] = 
-        pCommentLine(nameValue("Selection", restOfLine(false))) |> ignore
+    def pSelectionHeader(): Scanner[Unit] = 
+         anchorString("Selection:") `seqLeft` nextLine()
 
-    pub def pSelectionLine(): Parser[String] = 
-        pCommentLine(restOfLine(false))
+    def pSelectionLines(): Scanner[List[String]] = 
+        manyWhileSome(findStringInLine("* "), _ -> nextLine())
 
-    pub def pSelection(): Parser[Selection] = 
-        use TextParser.flatMap;
-        let inner = {
-            let* _ = pSelectionHeader();
-            let* xs = many(pSelectionLine());
-            return(Selection(xs))
-        };
-        inner |> nestError("selection")
+    def pSelection(): Scanner[Selection] = 
+        use TextScanner.flatMap;
+        let* _ = pSelectionHeader();
+        let* xs = pSelectionLines();
+        return(Selection(xs))
+    
+    /// Note - the first header is prefixed by an asterisk, we can't use `asterisk` to find this 
+    /// because `asterisk` can only see a token and there is no whitespace.
+    def pColumnHeaders(): Scanner[Headers] = 
+        use TextScanner.flatMap;
+        let* h1 = map(s -> String.dropLeft(1, s), next());
+        let* str = nextLine();
+        return(Headers(h1 :: String.splitOn(str, "\t")))
 
-    def pColumnName(): Parser[String] = 
-        manyChars2(
-            upper(),
-            choice(upper() :: char('_') :: digit() :: Nil)
-        ) |> nestError("ColumnName")
-
-    pub def pColumnHeaders(): Parser[Headers] = 
-        use TextParser.flatMap;
-        let inner = {
-            let* _ = char('*');
-            let* xs = sepBy(pColumnName(), tab());
-            let* _ = endOfLine();
-            return(Headers(xs))
-        };
-        inner |> nestError("ColumnHeaders") 
-
-    def pCellValue(): Parser[String] = 
-        manyChars(noneOf('\t' :: '\r' :: '\n' :: Nil))
-            |> swapError("cellValue")
-
-    pub def pDataRow(): Parser[DataRow] = 
-         map(DataRow, endBy(pCellValue(), tab())) |> swapError("valueRow")
+    
+    def pDataRow(): Scanner[DataRow] = 
+        use TextScanner.flatMap;
+        let* str = nextLine();
+        return(DataRow(String.splitOn(str, "\t")))
 
 
-    pub def pChangeFile(): Parser[ChangeFile] = 
-        use TextParser.flatMap;
+    pub def pChangeFile(): Scanner[ChangeFile] = 
+        use TextScanner.flatMap;
         let* hdr = pHeader();
-        let* sel = pSelection();
+        let* sel = pSelection();        
         let* cols = pColumnHeaders();
-        let* rows = manyTill(pDataRow(), TextParser.endOfInput());
+        let* rows = manyWhileTrue(hasNextLine(), pDataRow());
         return({ fileHeader = hdr, selection = sel, headers = cols, dataRows = rows })
 
 

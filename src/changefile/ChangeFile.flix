@@ -16,7 +16,7 @@
 
 use Time.LocalDateTime;
 
-namespace AssetPatch/ChangeFile {
+namespace AssetPatch/ChangeFile/Datatypes {
 
 
     pub enum FileType {

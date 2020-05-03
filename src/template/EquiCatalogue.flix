@@ -95,31 +95,31 @@ namespace AssetPatch/Template/EquiCatalogue {
     /// CRHTBT (Beam Trolley)
     ///
     pub def crhtbt[r](x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] =
-        crhtFamily("CHRTBT", x)
+        crhtFamily("CRHTBT", x)
 
     ///
     /// CRHTCH (Crane Hoist)
     ///
     pub def crhtch[r](x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] =
-        crhtFamily("CHRTCH", x)
+        crhtFamily("CRHTCH", x)
 
     ///
     /// CRHTCH (Crane)
     ///
     pub def crhtcr[r](x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] =
-        crhtFamily("CHRTCR", x)
+        crhtFamily("CRHTCR", x)
     
     ///
     /// CRHTDA (Davit)
     ///
     pub def crhtda[r](x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] =
-        crhtFamily("CHRTDA", x)
+        crhtFamily("CRHTDA", x)
 
     ///
     /// CRHTDS (Davit Socket)
     ///
     pub def crhtds[r](x: { equiId: EquiId, load: Int32, loadUnits: String, srNumber: String, testCert: String | r }): EquiTemplate[Unit] =
-        crhtFamily("CHRTDS", x)
+        crhtFamily("CRHTDS", x)
 
 
     ///
