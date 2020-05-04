@@ -21,41 +21,59 @@ use AssetPatch/Template/ValuaEqui.ValuaEqui;
 
 namespace AssetPatch/Template/EquiTemplate {
 
-    opaque type Attrs = (List[ClassEqui], List[ValuaEqui]) -> (List[ClassEqui], List[ValuaEqui])
+    // Templates only have a limited number of patch types to 
+    // generate.
+    // (Rewrites are different - in theory they can rewrite any combination of fields)
+
+    enum Entity {
+        case ClassEquiE(ClassEqui),
+        case ValuaEquiE(ValuaEqui)
+    }
+
+
+    type alias TemplateResult = { classEquis: List[ClassEqui], valuaEquis: List[ValuaEqui] }
+
+    opaque type Attrs = List[Entity] -> List[Entity]
 
     def append(x: Attrs, y: Attrs): Attrs = 
         let Attrs(f) = x;
         let Attrs(g) = y;
-        Attrs((xs,ys) -> let (xs1,ys1) = g(xs,ys); f(xs1, ys1))
+        Attrs(xs -> f(g(xs)))
     
-    def empty(): Attrs = Attrs((xs,ys) -> (xs,ys))
+    def empty(): Attrs = Attrs(xs -> xs)
 
     def class1(x: ClassEqui): Attrs = 
-        Attrs((xs,ys) -> (x :: xs, ys))
+        Attrs(xs -> ClassEquiE(x) :: xs)
 
-    def valua1(y: ValuaEqui): Attrs = 
-        Attrs((xs,ys) -> (xs, y :: ys))
+    def valua1(x: ValuaEqui): Attrs = 
+        Attrs(xs -> ValuaEquiE(x) :: xs)
+    
+    def attrsToTemplateResult (x: Attrs): TemplateResult = 
+        let Attrs(f) = x;
+        let xs = f(Nil);
+        let step = (e, r) -> match e { 
+            case ClassEquiE(ce) => { classEquis = ce :: r.classEquis | r }
+            case ValuaEquiE(ve) => { valuaEquis = ve :: r.valuaEquis | r }
+        };
+        List.foldRight(step, { classEquis = Nil, valuaEquis = Nil }, xs)
 
     /// EquiTemplate is a Writer monad
     pub opaque type EquiTemplate[t] = (t, Attrs)
 
-    pub def runEquiTemplate(ma: EquiTemplate[a]): (a, List[ClassEqui], List[ValuaEqui]) = 
-        let EquiTemplate((a, w)) = ma;
-        let Attrs(f) = w;
-        let (xs, ys) = f(Nil, Nil);
-        (a, xs, ys)
 
-    pub def execEquiTemplate(ma: EquiTemplate[a]): (List[ClassEqui], List[ValuaEqui]) = 
+    pub def runEquiTemplate(ma: EquiTemplate[a]): (a, TemplateResult) = 
+        let EquiTemplate((a, w)) = ma;
+        (a, attrsToTemplateResult(w))
+
+    pub def execEquiTemplate(ma: EquiTemplate[a]): TemplateResult = 
         let EquiTemplate((_, w)) = ma;
-        let Attrs(f) = w;
-        f(Nil, Nil)
+        attrsToTemplateResult(w)
 
     pub def generatePatches(ma: EquiTemplate[a], username: String, classpath: String, valuapath: String): Result[Unit, String] & Impure = 
         use Result.flatMap; 
-        let ((xs,ys)) = execEquiTemplate(ma);
-        let* _ = AssetPatch/Template/ClassEqui.makeChangeFile(username, "Asset Patch Create ClassEquis", xs).writeChangeFile(classpath);
-        let* _ = AssetPatch/Template/ValuaEqui.makeChangeFile(username, "Asset Patch Create ValuaEquis", ys).writeChangeFile(valuapath);
-        // let* _ = AssetPatch/Template/ClassEqui.makeChangeFile(username, "Asset Patch Create ClassEquis", xs).exportCsv(classpath + ".csv");
+        let r = execEquiTemplate(ma);
+        let* _ = AssetPatch/Template/ClassEqui.makeChangeFile(username, "Asset Patch Create ClassEquis", r.classEquis).writeChangeFile(classpath);
+        let* _ = AssetPatch/Template/ValuaEqui.makeChangeFile(username, "Asset Patch Create ValuaEquis", r.valuaEquis).writeChangeFile(valuapath);
         Ok(())
 
     pub def return(x: t): EquiTemplate[t] = 

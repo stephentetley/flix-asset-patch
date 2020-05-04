@@ -72,7 +72,7 @@ namespace AssetPatch/ChangeFile/ExportReport {
 
     def dataTableRow(x: DataRow, ix: Int32): Html = 
         let DataRow(xs1) = x;
-        tr(Nil, concat(List.map(s -> th(Nil, text(s)), Int32.toString(ix + 1) :: xs1)))
+        tr(Nil, concat(List.map(s -> td(Nil, text(s)), Int32.toString(ix + 1) :: xs1)))
 
     def dataTable(xs: Headers, ys: List[DataRow]): Html = 
         table(Nil, 

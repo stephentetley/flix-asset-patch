@@ -45,7 +45,7 @@ namespace AssetPatch/ChangeFile/ExportCsv {
     pub def exportCsv(x: ChangeFile, path: String): Result[Unit, String] & Impure =
         use Result.flatMap;
         let headers = x.getHeaderArray();
-        let* writer = newCsvWriter(path, headers);
+        let* writer = newCsvWriter(path, System/Charset.utf_8(), headers);
         let _ = Console.printLine("wrote Header...");
         let* _ = writeRows(writer, x.dataRows);
         let _ = writer.close();
