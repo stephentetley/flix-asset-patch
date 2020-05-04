@@ -36,46 +36,46 @@ namespace AssetPatch/Template/ValuaFloc {
 
     /// smart constructors for text or number ValuaFlocs
 
-    pub def stringValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: String): ValuaFloc = 
-        { floc = floc
-        , classType = classType
-        , charId = charId
-        , charValue = value
+    pub def stringValuaFloc[r](x: { floc: FlocId, classType: String, charId: String, counter: Int32, value: String | r}): ValuaFloc = 
+        { floc = x.floc
+        , classType = x.classType
+        , charId = x.charId
+        , charValue = x.value
         , code = 1
-        , valueDescription = value
-        , intCounterValue = counter
+        , valueDescription = x.value
+        , intCounterValue = x.counter
         , valueFrom = ""
         , valueTo = ""
         }
         
-    pub def int64ValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: Int64): ValuaFloc = 
-        { floc = floc
-        , classType = classType
-        , charId = charId
+    pub def int64ValuaFloc[r](x: { floc: FlocId, classType: String, charId: String, counter: Int32, value: Int64 | r}): ValuaFloc = 
+        { floc = x.floc
+        , classType = x.classType
+        , charId = x.charId
         , charValue = ""
         , code = 1
         , valueDescription = ""
-        , intCounterValue = counter
-        , valueFrom = Int64.toString(value)
+        , intCounterValue = x.counter
+        , valueFrom = Int64.toString(x.value)
         , valueTo = "0"
         }
     
-    pub def float64ValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: Float64): ValuaFloc = 
-        { floc = floc
-        , classType = classType
-        , charId = charId
+    pub def float64ValuaFloc[r](x: {floc: FlocId, classType: String, charId: String, counter: Int32, value: Float64 | r }): ValuaFloc = 
+        { floc = x.floc
+        , classType = x.classType
+        , charId = x.charId
         , charValue = ""
         , code = 1
         , valueDescription = ""
-        , intCounterValue = counter
-        , valueFrom = toDecimalString(5, value)
+        , intCounterValue = x.counter
+        , valueFrom = toDecimalString(5, x.value)
         , valueTo = "0"
         }
     
-    pub def tryDateValuaFloc(floc: FlocId, classType: String, charId: String, counter: Int32, value: LocalDate): Result[ValuaFloc, String] = 
+    pub def tryDateValuaFloc[r](x: {floc: FlocId, classType: String, charId: String, counter: Int32, value: LocalDate | r}): Result[ValuaFloc, String] = 
         use Result.flatMap;
-        let* dateValue = tryShowDate(value);
-        Ok(stringValuaFloc(floc, classType, charId, counter, dateValue))
+        let* dateValue = tryShowDate(x.value);
+        Ok(stringValuaFloc({ value = dateValue | x }))
 
 
 

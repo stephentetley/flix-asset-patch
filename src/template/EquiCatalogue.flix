@@ -36,10 +36,18 @@ namespace AssetPatch/Template/EquiCatalogue {
 
 
     pub def ai2_aib_reference[r](x: { equiId: EquiId, aib_ref: String | r }, ix: Int): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "AI2_AIB_REFERENCE", ix, x.aib_ref))
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId,
+                                        classType = "002", 
+                                        charId = "AI2_AIB_REFERENCE", 
+                                        counter = ix, 
+                                        value = x.aib_ref}))
 
     pub def s4_aib_reference[r](x: { equiId: EquiId | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "S4_AIB_REFERENCE", 1, ""))
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId, 
+                                        classType = "002",
+                                        charId = "S4_AIB_REFERENCE",
+                                        counter = 1, 
+                                        value = ""}))
 
     ///
     /// EAST_NORTH
@@ -53,17 +61,33 @@ namespace AssetPatch/Template/EquiCatalogue {
 
 
     def easting[r](x : { equiId: EquiId, easting: Int32 | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(int64ValuaEqui(x.equiId, "002", "EASTING", 1, Int32.toInt64(x.easting)))
+        tellValuaEqui(int64ValuaEqui({  equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "EASTING", 
+                                        counter = 1, 
+                                        value = Int32.toInt64(x.easting)}))
 
     def northing[r](x : { equiId: EquiId, northing: Int32 | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(int64ValuaEqui(x.equiId, "002", "NORTHING", 1, Int32.toInt64(x.northing)))
+        tellValuaEqui(int64ValuaEqui({  equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "NORTHING", 
+                                        counter = 1, 
+                                        value = Int32.toInt64(x.northing)}))
 
 
     pub def uniclass_code[r](x: { equiId: EquiId | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "UNICLASS_CODE", 1, "")) 
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "UNICLASS_CODE", 
+                                        counter = 1, 
+                                        value = ""})) 
 
     pub def uniclass_desc[r](x: { equiId: EquiId | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "UNICLASS_DESC", 1, "")) 
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "UNICLASS_DESC", 
+                                        counter = 1, 
+                                        value = ""})) 
 
     ///
     /// crhtFamily
@@ -80,16 +104,32 @@ namespace AssetPatch/Template/EquiCatalogue {
         return()
 
     pub def chrt_safe_working_load[r](x: { equiId: EquiId, load: Int32 | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(int64ValuaEqui(x.equiId, "002", "CRHT_SAFE_WORKING_LOAD", 1, Int32.toInt64(x.load))) 
+        tellValuaEqui(int64ValuaEqui({  equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "CRHT_SAFE_WORKING_LOAD", 
+                                        counter = 1, 
+                                        value = Int32.toInt64(x.load)})) 
 
     pub def chrt_safe_working_load_units[r](x: { equiId: EquiId, loadUnits: String | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "CRHT_SAFE_WORKING_LOAD_UNITS", 1, x.loadUnits)) 
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "CRHT_SAFE_WORKING_LOAD_UNITS", 
+                                        counter = 1, 
+                                        value = x.loadUnits})) 
 
     pub def statutory_reference_number[r](x: { equiId: EquiId, srNumber: String | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "STATUTORY_REFERENCE_NUMBER", 1, x.srNumber)) 
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "STATUTORY_REFERENCE_NUMBER", 
+                                        counter = 1, 
+                                        value = x.srNumber})) 
 
     pub def test_cert_no[r](x: { equiId: EquiId, testCert: String | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "TEST_CERT_NO", 1, x.testCert)) 
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "TEST_CERT_NO", 
+                                        counter = 1, 
+                                        value = x.testCert})) 
 
     ///
     /// CRHTBT (Beam Trolley)
@@ -137,17 +177,25 @@ namespace AssetPatch/Template/EquiCatalogue {
         return()
 
     pub def liac_safe_working_load[r](x: { equiId: EquiId, load: Int32 | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(int64ValuaEqui(x.equiId, "002", "LIAC_SAFE_WORKING_LOAD", 1, Int32.toInt64(x.load))) 
+        tellValuaEqui(int64ValuaEqui({  equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "LIAC_SAFE_WORKING_LOAD", 
+                                        counter = 1, 
+                                        value = Int32.toInt64(x.load)})) 
 
     pub def liac_safe_working_load_units[r](x: { equiId: EquiId, loadUnits: String | r }): AiwTemplate[Unit] = 
-        tellValuaEqui(stringValuaEqui(x.equiId, "002", "LIAC_SAFE_WORKING_LOAD_UNITS", 1, x.loadUnits)) 
+        tellValuaEqui(stringValuaEqui({ equi = x.equiId, 
+                                        classType = "002", 
+                                        charId = "LIAC_SAFE_WORKING_LOAD_UNITS", 
+                                        counter = 1, 
+                                        value = x.loadUnits})) 
 
 
     ///
     /// LIACDS (D Shackle)
     ///
     pub def liacds[r](x : { equiId: EquiId, load: Int32, loadUnits: String, testCert: String | r }): AiwTemplate[Unit] =
-        liacFamily("LIACDSs", x)
+        liacFamily("LIACDS", x)
 
     ///
     /// LIACMISC (miscellaneous, e.g. fork lift trucks etc.)

@@ -36,46 +36,46 @@ namespace AssetPatch/Template/ValuaEqui {
 
     /// smart constructors for text or number ValuaEquis
 
-    pub def stringValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: String): ValuaEqui = 
-        { equi = equi
-        , classType = classType
-        , charId = charId
-        , charValue = value
+    pub def stringValuaEqui[r](x: {equi: EquiId, classType: String, charId: String, counter: Int32, value: String | r}): ValuaEqui = 
+        { equi = x.equi
+        , classType = x.classType
+        , charId = x.charId
+        , charValue = x.value
         , code = 1
-        , valueDescription = value
-        , intCounterValue = counter
+        , valueDescription = x.value
+        , intCounterValue = x.counter
         , valueFrom = ""
         , valueTo = ""
         }
         
-    pub def int64ValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: Int64): ValuaEqui = 
-        { equi = equi
-        , classType = classType
-        , charId = charId
+    pub def int64ValuaEqui[r](x: { equi: EquiId, classType: String, charId: String, counter: Int32, value: Int64 | r }): ValuaEqui = 
+        { equi = x.equi
+        , classType = x.classType
+        , charId = x.charId
         , charValue = ""
         , code = 1
         , valueDescription = ""
-        , intCounterValue = counter
-        , valueFrom = Int64.toString(value)
+        , intCounterValue = x.counter
+        , valueFrom = Int64.toString(x.value)
         , valueTo = "0"
         }
     
-    pub def float64ValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: Float64): ValuaEqui = 
-        { equi = equi
-        , classType = classType
-        , charId = charId
+    pub def float64ValuaEqui[r](x: { equi: EquiId, classType: String, charId: String, counter: Int32, value: Float64 | r }): ValuaEqui = 
+        { equi = x.equi
+        , classType = x.classType
+        , charId = x.charId
         , charValue = ""
         , code = 1
         , valueDescription = ""
-        , intCounterValue = counter
-        , valueFrom = toDecimalString(5, value)
+        , intCounterValue = x.counter
+        , valueFrom = toDecimalString(5, x.value)
         , valueTo = "0"
         }
     
-    pub def tryDateValuaEqui(equi: EquiId, classType: String, charId: String, counter: Int32, value: LocalDate): Result[ValuaEqui, String] = 
+    pub def tryDateValuaEqui[r](x: {equi: EquiId, classType: String, charId: String, counter: Int32, value: LocalDate | r}): Result[ValuaEqui, String] = 
         use Result.flatMap;
-        let* dateValue = tryShowDate(value);
-        Ok(stringValuaEqui(equi, classType, charId, counter, dateValue))
+        let* dateValue = tryShowDate(x.value);
+        Ok(stringValuaEqui({ value = dateValue | x }))
 
 
 

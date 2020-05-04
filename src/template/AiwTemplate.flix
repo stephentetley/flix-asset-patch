@@ -16,6 +16,8 @@
 
 use AssetPatch/ChangeFile/Printer.{writeChangeFile};
 use AssetPatch/ChangeFile/ExportCsv.{exportCsv};
+use AssetPatch/Template/ClassFloc.ClassFloc;
+use AssetPatch/Template/ValuaFloc.ValuaFloc;
 use AssetPatch/Template/ClassEqui.ClassEqui;
 use AssetPatch/Template/ValuaEqui.ValuaEqui;
 
@@ -26,12 +28,14 @@ namespace AssetPatch/Template/AiwTemplate {
     // (Rewrites are different - in theory they can rewrite any combination of fields)
 
     enum Entity {
+        case ClassFlocE(ClassFloc),
+        case ValuaFlocE(ValuaFloc),
         case ClassEquiE(ClassEqui),
         case ValuaEquiE(ValuaEqui)
     }
 
 
-    type alias TemplateResult = { classEquis: List[ClassEqui], valuaEquis: List[ValuaEqui] }
+    type alias TemplateResult = { classFlocs: List[ClassFloc], valuaFlocs: List[ValuaFloc], classEquis: List[ClassEqui], valuaEquis: List[ValuaEqui] }
 
     opaque type Attrs = List[Entity] -> List[Entity]
 
@@ -42,20 +46,24 @@ namespace AssetPatch/Template/AiwTemplate {
     
     def empty(): Attrs = Attrs(xs -> xs)
 
-    def class1(x: ClassEqui): Attrs = 
-        Attrs(xs -> ClassEquiE(x) :: xs)
+    def classFloc1(x: ClassFloc): Attrs = Attrs(xs -> ClassFlocE(x) :: xs)
 
-    def valua1(x: ValuaEqui): Attrs = 
-        Attrs(xs -> ValuaEquiE(x) :: xs)
+    def valuaFloc1(x: ValuaFloc): Attrs = Attrs(xs -> ValuaFlocE(x) :: xs)
+    
+    def classEqui1(x: ClassEqui): Attrs = Attrs(xs -> ClassEquiE(x) :: xs)
+
+    def valuaEqui1(x: ValuaEqui): Attrs = Attrs(xs -> ValuaEquiE(x) :: xs)
     
     def attrsToTemplateResult (x: Attrs): TemplateResult = 
         let Attrs(f) = x;
         let xs = f(Nil);
         let step = (e, r) -> match e { 
+            case ClassFlocE(cf) => { classFlocs = cf :: r.classFlocs | r }
+            case ValuaFlocE(vf) => { valuaFlocs = vf :: r.valuaFlocs | r }
             case ClassEquiE(ce) => { classEquis = ce :: r.classEquis | r }
             case ValuaEquiE(ve) => { valuaEquis = ve :: r.valuaEquis | r }
         };
-        List.foldRight(step, { classEquis = Nil, valuaEquis = Nil }, xs)
+        List.foldRight(step, { classFlocs = Nil, valuaFlocs = Nil, classEquis = Nil, valuaEquis = Nil }, xs)
 
     /// AiwTemplate is a Writer monad
     pub opaque type AiwTemplate[t] = (t, Attrs)
@@ -69,6 +77,7 @@ namespace AssetPatch/Template/AiwTemplate {
         let AiwTemplate((_, w)) = ma;
         attrsToTemplateResult(w)
 
+    /// TODO floc patches...
     pub def generatePatches(ma: AiwTemplate[a], username: String, classpath: String, valuapath: String): Result[Unit, String] & Impure = 
         use Result.flatMap; 
         let r = execAiwTemplate(ma);
@@ -90,11 +99,18 @@ namespace AssetPatch/Template/AiwTemplate {
 
     pub def flatMap(k: a -> AiwTemplate[b], ma: AiwTemplate[a]): AiwTemplate[b] = bind(ma, k)
 
+    pub def tellClassFloc(x: ClassFloc): AiwTemplate[Unit] = 
+        AiwTemplate(((), classFloc1(x)))
+    
+    pub def tellValuaFloc(x: ValuaFloc): AiwTemplate[Unit] = 
+        AiwTemplate(((), valuaFloc1(x)))
+
+
     pub def tellClassEqui(x: ClassEqui): AiwTemplate[Unit] = 
-        AiwTemplate(((), class1(x)))
+        AiwTemplate(((), classEqui1(x)))
     
     pub def tellValuaEqui(x: ValuaEqui): AiwTemplate[Unit] = 
-        AiwTemplate(((), valua1(x)))
+        AiwTemplate(((), valuaEqui1(x)))
 
     pub def mapM(f: a -> AiwTemplate[b], xs: List[a]): AiwTemplate[List[b]] = 
         mapMHelper(f, xs, empty(), ks -> ks)
