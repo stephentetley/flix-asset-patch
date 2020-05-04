@@ -15,7 +15,7 @@ use AssetPatch/ChangeFile/ExportCsv.{exportCsv};
 @test
 def test01(): Result[String, String] & Impure = 
     let src = 
-        "G:\work\Projects\assets\asset_patch\file_download_edm\car36_outstation_valuaequi.txt" |> System/FilePath.new;
+        "G:/work/Projects/assets/asset_patch/file_download_edm/car36_outstation_valuaequi.txt" |> System/FilePath.new;
     TextScanner.parseFile(AssetPatch/ChangeFile/Parser.pChangeFile(), src, System/Charset.utf_8())
         |> Result.map(printChangeFile)
 
@@ -23,7 +23,7 @@ def test01(): Result[String, String] & Impure =
 def test02(): Result[Unit, String] & Impure = 
     use Result.flatMap;
     let src = 
-        "G:\work\Projects\assets\flix_asset_patch\car36_outstation_valuaequi.txt" |> System/FilePath.new;
+        "G:/work/Projects/assets/flix_asset_patch/car36_outstation_valuaequi.txt" |> System/FilePath.new;
     let csv = 
         "G:/work/Projects/assets/flix_asset_patch/car36_outstation_valuaequi_output.csv";
     let html = 
@@ -34,6 +34,20 @@ def test02(): Result[Unit, String] & Impure =
     let* _ = exportCsv(ans, csv);
     Ok()
 
+@test
+def test02a(): Result[Unit, String] & Impure = 
+    use Result.flatMap;
+    let src = 
+        "G:/work/Projects/assets/flix_asset_patch/bbmed_cr_equipment_file_download_stage1.txt" |> System/FilePath.new;
+    let csv = 
+        "G:/work/Projects/assets/flix_asset_patch/bbmed_cr_equipment_file_download_stage1.csv";
+    let html = 
+        "G:/work/Projects/assets/flix_asset_patch/bbmed_cr_equipment_file_download_stage1.html";
+    
+    let* ans = TextScanner.parseFile(AssetPatch/ChangeFile/Parser.pChangeFile(), src, System/Charset.utf_8());    
+    let* _ = exportReport(ans, html);
+    let* _ = exportCsv(ans, csv);
+    Ok()
 
 def showHeaders(x: ChangeFile): Unit & Impure = 
     let Headers(xs) = x.headers;

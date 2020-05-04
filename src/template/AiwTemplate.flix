@@ -19,7 +19,7 @@ use AssetPatch/ChangeFile/ExportCsv.{exportCsv};
 use AssetPatch/Template/ClassEqui.ClassEqui;
 use AssetPatch/Template/ValuaEqui.ValuaEqui;
 
-namespace AssetPatch/Template/EquiTemplate {
+namespace AssetPatch/Template/AiwTemplate {
 
     // Templates only have a limited number of patch types to 
     // generate.
@@ -57,64 +57,64 @@ namespace AssetPatch/Template/EquiTemplate {
         };
         List.foldRight(step, { classEquis = Nil, valuaEquis = Nil }, xs)
 
-    /// EquiTemplate is a Writer monad
-    pub opaque type EquiTemplate[t] = (t, Attrs)
+    /// AiwTemplate is a Writer monad
+    pub opaque type AiwTemplate[t] = (t, Attrs)
 
 
-    pub def runEquiTemplate(ma: EquiTemplate[a]): (a, TemplateResult) = 
-        let EquiTemplate((a, w)) = ma;
+    pub def runAiwTemplate(ma: AiwTemplate[a]): (a, TemplateResult) = 
+        let AiwTemplate((a, w)) = ma;
         (a, attrsToTemplateResult(w))
 
-    pub def execEquiTemplate(ma: EquiTemplate[a]): TemplateResult = 
-        let EquiTemplate((_, w)) = ma;
+    pub def execAiwTemplate(ma: AiwTemplate[a]): TemplateResult = 
+        let AiwTemplate((_, w)) = ma;
         attrsToTemplateResult(w)
 
-    pub def generatePatches(ma: EquiTemplate[a], username: String, classpath: String, valuapath: String): Result[Unit, String] & Impure = 
+    pub def generatePatches(ma: AiwTemplate[a], username: String, classpath: String, valuapath: String): Result[Unit, String] & Impure = 
         use Result.flatMap; 
-        let r = execEquiTemplate(ma);
+        let r = execAiwTemplate(ma);
         let* _ = AssetPatch/Template/ClassEqui.makeChangeFile(username, "Asset Patch Create ClassEquis", r.classEquis).writeChangeFile(classpath);
         let* _ = AssetPatch/Template/ValuaEqui.makeChangeFile(username, "Asset Patch Create ValuaEquis", r.valuaEquis).writeChangeFile(valuapath);
         Ok(())
 
-    pub def return(x: t): EquiTemplate[t] = 
-        EquiTemplate((x, empty()))
+    pub def return(x: t): AiwTemplate[t] = 
+        AiwTemplate((x, empty()))
 
-    pub def map(f: a -> b, ma: EquiTemplate[a]): EquiTemplate[b] = 
-        let EquiTemplate((a,w)) = ma;
-        EquiTemplate((f(a), w))
+    pub def map(f: a -> b, ma: AiwTemplate[a]): AiwTemplate[b] = 
+        let AiwTemplate((a,w)) = ma;
+        AiwTemplate((f(a), w))
 
-    pub def bind(ma: EquiTemplate[a], k: a -> EquiTemplate[b]): EquiTemplate[b] = 
-        let EquiTemplate((a,w)) = ma;
-        let EquiTemplate((b,w1)) = k(a);
-        EquiTemplate((b, w `append` w1))
+    pub def bind(ma: AiwTemplate[a], k: a -> AiwTemplate[b]): AiwTemplate[b] = 
+        let AiwTemplate((a,w)) = ma;
+        let AiwTemplate((b,w1)) = k(a);
+        AiwTemplate((b, w `append` w1))
 
-    pub def flatMap(k: a -> EquiTemplate[b], ma: EquiTemplate[a]): EquiTemplate[b] = bind(ma, k)
+    pub def flatMap(k: a -> AiwTemplate[b], ma: AiwTemplate[a]): AiwTemplate[b] = bind(ma, k)
 
-    pub def tellClassEqui(x: ClassEqui): EquiTemplate[Unit] = 
-        EquiTemplate(((), class1(x)))
+    pub def tellClassEqui(x: ClassEqui): AiwTemplate[Unit] = 
+        AiwTemplate(((), class1(x)))
     
-    pub def tellValuaEqui(x: ValuaEqui): EquiTemplate[Unit] = 
-        EquiTemplate(((), valua1(x)))
+    pub def tellValuaEqui(x: ValuaEqui): AiwTemplate[Unit] = 
+        AiwTemplate(((), valua1(x)))
 
-    pub def mapM(f: a -> EquiTemplate[b], xs: List[a]): EquiTemplate[List[b]] = 
+    pub def mapM(f: a -> AiwTemplate[b], xs: List[a]): AiwTemplate[List[b]] = 
         mapMHelper(f, xs, empty(), ks -> ks)
         
-    def mapMHelper(f: a -> EquiTemplate[b], xs: List[a], w: Attrs, k: List[b] -> List[b]): EquiTemplate[List[b]] = 
+    def mapMHelper(f: a -> AiwTemplate[b], xs: List[a], w: Attrs, k: List[b] -> List[b]): AiwTemplate[List[b]] = 
         match xs { 
-            case Nil => EquiTemplate(k(Nil), w)
+            case Nil => AiwTemplate(k(Nil), w)
             case x :: rs => { 
-                let EquiTemplate((a,w1)) = f(x);
+                let AiwTemplate((a,w1)) = f(x);
                 mapMHelper(f, rs, w `append` w1, ks -> a :: ks)
             }
         }
 
-    pub def sequence_(xs: List[EquiTemplate[a]]): EquiTemplate[Unit] = sequenceHelper_(xs, empty())
+    pub def sequence_(xs: List[AiwTemplate[a]]): AiwTemplate[Unit] = sequenceHelper_(xs, empty())
     
-    def sequenceHelper_(xs: List[EquiTemplate[a]], w: Attrs): EquiTemplate[Unit] = 
+    def sequenceHelper_(xs: List[AiwTemplate[a]], w: Attrs): AiwTemplate[Unit] = 
         match xs { 
-            case Nil => EquiTemplate((), w)
+            case Nil => AiwTemplate((), w)
             case mx :: rs => { 
-                let EquiTemplate((_,w1)) = mx;
+                let AiwTemplate((_,w1)) = mx;
                 sequenceHelper_(rs, w `append` w1)
             }
         }
