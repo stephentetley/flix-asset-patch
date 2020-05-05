@@ -52,10 +52,13 @@ namespace AssetPatch/Template/Common {
     
     pub opaque type FlocId = String
 
-    pub def tryShowDate(x: LocalDate): Result[String, String] = 
-        use Result.flatMap;
-        let* patt = Time/Format/DateFormatter.fromPattern("dd.MM.yyyy");
-        Ok(Time/LocalDate.format(x, patt))
+    pub def showS4Bool(x: Bool) : String = if (x) "X" else ""
+
+    pub def showS4Date (date: LocalDate) : String = 
+        match Time/Format/DateFormatter.fromPattern("dd.MM.yyyy") {
+            case Err(msg)    => msg       // should be impossible
+            case Ok(pattern) => Time/LocalDate.format(date, pattern)
+        }
     
 
     pub def makeFileHeader[r](x: { user: String, variant: String, entityType: EntityType | r }): FileHeader & Impure =     

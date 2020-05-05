@@ -20,6 +20,7 @@ use AssetPatch/Template/ClassFloc.ClassFloc;
 use AssetPatch/Template/ValuaFloc.ValuaFloc;
 use AssetPatch/Template/ClassEqui.ClassEqui;
 use AssetPatch/Template/ValuaEqui.ValuaEqui;
+use AssetPatch/Template/Eqmltxt.Eqmltxt;
 
 namespace AssetPatch/Template/AiwTemplate {
 
@@ -31,11 +32,14 @@ namespace AssetPatch/Template/AiwTemplate {
         case ClassFlocE(ClassFloc),
         case ValuaFlocE(ValuaFloc),
         case ClassEquiE(ClassEqui),
-        case ValuaEquiE(ValuaEqui)
+        case ValuaEquiE(ValuaEqui),
+        case EqmltxtE(Eqmltxt)
     }
 
 
-    type alias TemplateResult = { classFlocs: List[ClassFloc], valuaFlocs: List[ValuaFloc], classEquis: List[ClassEqui], valuaEquis: List[ValuaEqui] }
+    type alias TemplateResult = { classFlocs: List[ClassFloc], valuaFlocs: List[ValuaFloc], 
+                                    classEquis: List[ClassEqui], valuaEquis: List[ValuaEqui],
+                                    eqmltxts: List[Eqmltxt] }
 
     opaque type Attrs = List[Entity] -> List[Entity]
 
@@ -53,6 +57,8 @@ namespace AssetPatch/Template/AiwTemplate {
     def classEqui1(x: ClassEqui): Attrs = Attrs(xs -> ClassEquiE(x) :: xs)
 
     def valuaEqui1(x: ValuaEqui): Attrs = Attrs(xs -> ValuaEquiE(x) :: xs)
+
+    def eqmltxt1(x: Eqmltxt): Attrs = Attrs(xs -> EqmltxtE(x) :: xs)
     
     def attrsToTemplateResult (x: Attrs): TemplateResult = 
         let Attrs(f) = x;
@@ -62,8 +68,9 @@ namespace AssetPatch/Template/AiwTemplate {
             case ValuaFlocE(vf) => { valuaFlocs = vf :: r.valuaFlocs | r }
             case ClassEquiE(ce) => { classEquis = ce :: r.classEquis | r }
             case ValuaEquiE(ve) => { valuaEquis = ve :: r.valuaEquis | r }
+            case EqmltxtE(eqml) => { eqmltxts = eqml :: r.eqmltxts | r }
         };
-        List.foldRight(step, { classFlocs = Nil, valuaFlocs = Nil, classEquis = Nil, valuaEquis = Nil }, xs)
+        List.foldRight(step, { classFlocs = Nil, valuaFlocs = Nil, classEquis = Nil, valuaEquis = Nil, eqmltxts = Nil }, xs)
 
     /// AiwTemplate is a Writer monad
     pub opaque type AiwTemplate[t] = (t, Attrs)
@@ -111,6 +118,9 @@ namespace AssetPatch/Template/AiwTemplate {
     
     pub def tellValuaEqui(x: ValuaEqui): AiwTemplate[Unit] = 
         AiwTemplate(((), valuaEqui1(x)))
+
+    pub def tellEqmltxt(x: Eqmltxt): AiwTemplate[Unit] = 
+        AiwTemplate(((), eqmltxt1(x)))
 
     pub def mapM(f: a -> AiwTemplate[b], xs: List[a]): AiwTemplate[List[b]] = 
         mapMHelper(f, xs, empty(), ks -> ks)

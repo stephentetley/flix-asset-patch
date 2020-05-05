@@ -24,7 +24,7 @@ use AssetPatch/ChangeFile/Datatypes.{emptySelection};
 
 use AssetPatch/Template/Common.{FlocId};
 use AssetPatch/Template/Common.FlocId.{FlocId};
-use AssetPatch/Template/Common.{makeFileHeader, toDecimalString, tryShowDate};
+use AssetPatch/Template/Common.{makeFileHeader, toDecimalString, showS4Date};
 
 namespace AssetPatch/Template/ValuaFloc {
 
@@ -47,7 +47,10 @@ namespace AssetPatch/Template/ValuaFloc {
         , valueFrom = ""
         , valueTo = ""
         }
-        
+    
+    pub def dateValuaFloc[r](x: {floc: FlocId, classType: String, charId: String, counter: Int32, value: LocalDate | r}): ValuaFloc = 
+        stringValuaFloc({ value = showS4Date(x.value) | x })
+            
     pub def int64ValuaFloc[r](x: { floc: FlocId, classType: String, charId: String, counter: Int32, value: Int64 | r}): ValuaFloc = 
         { floc = x.floc
         , classType = x.classType
@@ -72,10 +75,6 @@ namespace AssetPatch/Template/ValuaFloc {
         , valueTo = "0"
         }
     
-    pub def tryDateValuaFloc[r](x: {floc: FlocId, classType: String, charId: String, counter: Int32, value: LocalDate | r}): Result[ValuaFloc, String] = 
-        use Result.flatMap;
-        let* dateValue = tryShowDate(x.value);
-        Ok(stringValuaFloc({ value = dateValue | x }))
 
 
 

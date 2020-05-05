@@ -24,7 +24,7 @@ use AssetPatch/ChangeFile/Datatypes.{emptySelection};
 
 use AssetPatch/Template/Common.{EquiId};
 use AssetPatch/Template/Common.EquiId.{EquiId};
-use AssetPatch/Template/Common.{makeFileHeader, toDecimalString, tryShowDate};
+use AssetPatch/Template/Common.{makeFileHeader, toDecimalString, showS4Date};
 
 namespace AssetPatch/Template/ValuaEqui {
 
@@ -47,6 +47,9 @@ namespace AssetPatch/Template/ValuaEqui {
         , valueFrom = ""
         , valueTo = ""
         }
+    
+    pub def dateValuaEqui[r](x: {equi: EquiId, classType: String, charId: String, counter: Int32, value: LocalDate | r}): ValuaEqui = 
+        stringValuaEqui({ value = showS4Date(x.value) | x })
         
     pub def int64ValuaEqui[r](x: { equi: EquiId, classType: String, charId: String, counter: Int32, value: Int64 | r }): ValuaEqui = 
         { equi = x.equi
@@ -71,11 +74,6 @@ namespace AssetPatch/Template/ValuaEqui {
         , valueFrom = toDecimalString(5, x.value)
         , valueTo = "0"
         }
-    
-    pub def tryDateValuaEqui[r](x: {equi: EquiId, classType: String, charId: String, counter: Int32, value: LocalDate | r}): Result[ValuaEqui, String] = 
-        use Result.flatMap;
-        let* dateValue = tryShowDate(x.value);
-        Ok(stringValuaEqui({ value = dateValue | x }))
 
 
 
